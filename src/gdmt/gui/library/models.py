@@ -1,16 +1,17 @@
 import platform
-from PyQt.QtCore import *
-from PyQt.QtGui import *
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from sqlalchemy import (Table, Column, Integer, String, Text, Float, MetaData,
-        ForeignKey)
+        ForeignKey, Date, UniqueConstraint)
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, backref
 
 Base = declarative_base()
 
 class HealthCenterType(Base):
     __tablename__ = 'health_center_types'
 
-    id = Column('id', Integer, primery_key=True)
+    id = Column('id', Integer, primary_key=True)
     name = Column('name', String(100))
     description = Column('description', Text, nullable=True)
 
@@ -26,12 +27,12 @@ class HealthCenter(Base):
 
     id = Column('id', Integer, primary_key=True)
     name = Column('name', String(100))
-    type_id = Column('type', ForeignKey('health_center_types.id'))
+    type_id = Column('type_id', ForeignKey('health_center_types.id'))
     latitude = Column('latitude', Float)
     longitude = Column('longitude', Float)
     description = Column('description', Text, nullable=True)
 
-    type = relationship(HealthCenterType, backref('health_centers', order_by=id))
+    #type = relationship(HealthCenterType, backref('health_centers', order_by=id))
 
     def __init__(self, name, type, latitude, longitude, description=''):
         self.name = name
@@ -49,11 +50,11 @@ class HealthCenter(Base):
 class RatingCriteria(Base):
     __tablename__ = 'rating_criterias'
 
-    id = Column('id', Integer, primary_key=true)
+    id = Column('id', Integer, primary_key=True)
     name = Column('name', String(100))
     min_value = Column('min_value', Float)
     max_value = Column('max_value', Float)
-    description = Column('description', Teaxt, nullable=True)
+    description = Column('description', Text, nullable=True)
 
     def __init__(self, name, description=''):
         self.name = name
@@ -65,15 +66,17 @@ class RatingCriteria(Base):
 class Rating(Base):
     __tablename__ = 'ratings'
 
-    id = Column('id', Integer, primary_key=true)
+    id = Column('id', Integer, primary_key=True)
     value = Column('value', Float)
-    health_center_id = Column('health_center', ForeignKey('health_centers.id'))
-    criteria_id = Column('criteria', ForeignKey('rating_crierias.id'))
+    health_center_id = Column('health_center_id', ForeignKey('health_centers.id'))
+    criteria_id = Column('criteria_id', ForeignKey('rating_criterias.id'))
     date = Column('date', Date)
     description = Column('description', Text, nullable=True)
 
-    criteria = relationship(RatingCriteria, backref('ratings', order_by=id))
-    health_center = relationship(HealthCenter, backref('ratings', order_by=id))
+    UniqueConstraint('health_center_id', 'criteria_id')
+
+    #criteria = relationship(RatingCriteria, backref('ratings', order_by=id))
+    #health_center = relationship(HealthCenter, backref('ratings', order_by=id))
 
     def __init__(self, value, health_center_id, criteria, date, description=''):
         self.value = value
