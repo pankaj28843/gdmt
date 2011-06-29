@@ -4,6 +4,7 @@ import platform
 import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from gui.library.dialogs import *
 __version__ = '1.0.0'
 
 
@@ -62,6 +63,7 @@ class MainWindow(QMainWindow):
                 settings.value('MainWindow/Restore').toByteArray())
 
         self.setWindowTitle('GIS Data Monitoring Tool')
+        #self.showMaximized()
 
     def fileImport(self):
         pass
@@ -70,7 +72,14 @@ class MainWindow(QMainWindow):
         pass
 
     def addHealthCenter(self):
-        pass
+        form = HealthCenterDialog()
+        self.infinite_loop(form)
+
+    def infinite_loop(self, form):
+        if form.exec_():
+            if form.isValid() is not True:
+                self.infinite_loop(form)
+            return
 
     def editHealthCenter(self):
         pass
@@ -117,7 +126,7 @@ class MainWindow(QMainWindow):
                     __version__, platform.python_version(),
                     QT_VERSION_STR, PYQT_VERSION_STR, platform.system()))
 
-def start_app():
+def main():
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
@@ -125,4 +134,4 @@ def start_app():
 
 if __name__ == '__main__':
     #someone is launching this file directly
-    start_app()
+    main()

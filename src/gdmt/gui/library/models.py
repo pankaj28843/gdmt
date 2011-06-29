@@ -31,15 +31,22 @@ class HealthCenter(Base):
     latitude = Column('latitude', Float)
     longitude = Column('longitude', Float)
     description = Column('description', Text, nullable=True)
+    responsible_person = Column('responsible_person', String(100))
+    phone_number = Column('phone_number', String(20))
+    email_address = Column('email_address', String(20), nullable=True)
 
     #type = relationship(HealthCenterType, backref('health_centers', order_by=id))
 
-    def __init__(self, name, type, latitude, longitude, description=''):
+    def __init__(self, name, type_id, latitude, longitude,
+            responsible_person, phone_number, email_address='', description=''):
         self.name = name
-        self.type = type
+        self.type_id = type_id
         self.latitude = latitude
         self.longitude = longitude
         self.description = description
+        self.responsible_person = responsible_person
+        self.phone_number = phone_number
+        self.email_address = email_address
 
     def __repr__(self):
         return '<HealthCenter(%s, %s)' % (self.name, self.type)
@@ -78,10 +85,10 @@ class Rating(Base):
     #criteria = relationship(RatingCriteria, backref('ratings', order_by=id))
     #health_center = relationship(HealthCenter, backref('ratings', order_by=id))
 
-    def __init__(self, value, health_center_id, criteria, date, description=''):
+    def __init__(self, value, health_center_id, criteria_id, date, description=''):
         self.value = value
-        self.health_center = health_center
-        self.criteria = criteria
+        self.health_center_id = health_center_id
+        self.criteria_id = criteria_id
         self.date = date
         self.description = description
 

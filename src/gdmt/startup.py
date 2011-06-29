@@ -1,5 +1,7 @@
 #!/usr/bin/env/python
 
+import sys, os
 from gui import main
 
-main.start_app()
+sys.path.insert(0, os.path.dirname(__file__))
+main.main()
