@@ -50,7 +50,6 @@ class HealthCenter(Base):
         self.responsible_person = responsible_person
         self.phone_number = phone_number
         self.email_address = email_address
-        print self.latitude, self.longitude
 
     def __repr__(self):
         return '<HealthCenter(%s, %s)' % (self.name, self.type)

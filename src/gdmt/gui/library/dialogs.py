@@ -1,6 +1,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from gui.dialogs.health_center_dialog_ui import Ui_HealthCenterDialog
+from gui.dialogs.delete_health_center_dialog_ui import Ui_DeleteHealthCenterDialog
 from gui.library.models import *
 from utils.config import session
 
@@ -14,10 +15,12 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
     def __init__(self, health_center=None, parent=None):
         super(HealthCenterDialog, self).__init__(parent)
 
+        self.success = False
+        self.health_center = health_center
         self.setupUi(self)
         self.typeComboBox.addItems(types)
 
-        if health_center is not None:
+        if self.health_center is not None:
             self.nameLineEdit.setText(QString(health_center.name))
             self.latitudeLineEdit.setText(QString(health_center.latitude))
             self.longitudeLineEdit.setText(QString(health_center.longitude))
@@ -32,11 +35,13 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
 
         if not MAC:
             self.buttonBox.setFocusPolicy(Qt.NoFocus)
+
         self.connect(self.buttonBox.button(QDialogButtonBox.Ok),
                     SIGNAL('clicked()'), self.save)
         self.connect(self.buttonBox.button(QDialogButtonBox.Cancel),
                     SIGNAL('clicked()'), self.reject)
         self.connect(self, SIGNAL('rejected()'), self.reject)
+
     def save(self):
         if not self.isValid():
             return
@@ -50,7 +55,7 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
         phone_number = unicode(self.phoneNumberLineEdit.text())
         email_address = unicode(self.emailAddressLineEdit.text())
 
-        if health_center is not None:
+        if self.health_center is not None:
             session.query(HealthCenter).filter(
                     HealthCenter.id == health_center.id).update(values=dict(
                         name=name, type_id=type_id, latitude=latitude,
@@ -64,6 +69,7 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
             session.add(hc)
 
         session.commit()
+        self.success = True
         self.accept()
         return
 
@@ -79,7 +85,36 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
             self.nameResponsibleLineEdit.setFocus()
             return False
         if self.phoneNumberLineEdit.text() == '':
-            QMessageBox.warning(self, 'Errors in Form', "Phone Number can't be empty.")
+            QMessageBox.warning(self, 'Errors in Form',
+                    "Phone Number can't be empty.")
             self.phoneNumberLineEdit.setFocus()
             return False
         return True
+
+class DeleteHealthCenterDialog(QDialog, Ui_DeleteHealthCenterDialog):
+    def __init__(self, health_center=None, parent=None):
+        super(DeleteHealthCenterDialog, self).__init__(parent)
+        self.success = False
+        self.health_center = health_center
+        self.setupUi(self)
+        self.label.setText(QString('<p style="color:red">Are you to delete '
+            'Health Center - <b>"%s"</b></p>'%
+            health_center.name))
+        self.buttonBox.button(QDialogButtonBox.Cancel).setFocus()
+
+        if not MAC:
+            self.buttonBox.setFocusPolicy(Qt.NoFocus)
+
+        self.connect(self.buttonBox.button(QDialogButtonBox.Ok),
+                    SIGNAL('clicked()'), self.delete)
+        self.connect(self.buttonBox.button(QDialogButtonBox.Cancel),
+                    SIGNAL('clicked()'), self.reject)
+        self.connect(self, SIGNAL('rejected()'), self.reject)
+
+    def delete(self):
+        session.delete(self.health_center)
+        session.commit()
+        self.success = True
+        self.accept()
+        return
+

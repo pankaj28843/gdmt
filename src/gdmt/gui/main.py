@@ -95,8 +95,10 @@ class MainWindow(QMainWindow):
     def addHealthCenter(self):
         form = HealthCenterDialog()
         if form.exec_():
-            self.health_centers = getHealthCenters()
-            self.showHealthCenters()
+            if form.success:
+                self.health_centers = getHealthCenters()
+                self.showHealthCenters()
+                self.table.setCurrentCell(-1,-1)
 
     def editHealthCenter(self):
         current_row = self.table.currentRow()
@@ -104,11 +106,12 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, 'Error', 'Please select a row.')
             self.table.setCurrentCell(-1,-1)
             return
-        hc = self.health_centers[corrent_row]
+        hc = self.health_centers[current_row]
         form = HealthCenterDialog(health_center=hc)
         if form.exec_():
-            self.health_centers = getHealthCenters()
-            self.showHealthCenters()
+            if form.success:
+                self.health_centers = getHealthCenters()
+                self.showHealthCenters()
 
     def deleteHealthCenter(self):
         current_row = self.table.currentRow()
@@ -116,10 +119,13 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, 'Error', 'Please select a row.')
             self.table.setCurrentCell(-1,-1)
             return
-        hc = self.health_centers[current_row]
-        session.delete(hc)
-        self.health_centers.remove(hc)
-        self.table.removeRow(current_row)
+        hc =  self.health_centers[current_row]
+        form = DeleteHealthCenterDialog(health_center=hc)
+        if form.exec_():
+            if form.success:
+               self.health_centers.remove(hc)
+               self.table.removeRow(current_row)
+               self.table.setCurrentCell(-1,-1)
 
 
     def showHealthCenters(self):
