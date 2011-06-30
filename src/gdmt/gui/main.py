@@ -15,6 +15,12 @@ def getHealthCenters():
         hc_list.append(hc)
     return hc_list
 
+def getRatingCriterias():
+    rc_list = []
+    for rc in session.query(RatingCriteria).order_by(RatingCriteria.name):
+        rc_list.append(rc)
+    return rc_list
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -37,8 +43,9 @@ class MainWindow(QMainWindow):
                 'Manage &Health Centers', self.manageHealthCenters,
                 tip='Manage Health Centers')
 
-        toolsManageCriteriasAction = self.createAction('Manage &Criterias',
-                self.manageCriterias, tip='Manage Criterias')
+        toolsManageRatingCriteriasAction = self.createAction(
+                'Manage &Rating Criterias', self.manageRatingCriterias,
+                tip='Manage Criterias')
 
         helpAboutAction = self.createAction('&About', self.helpAbout,
                 tip='About the application')
@@ -49,7 +56,7 @@ class MainWindow(QMainWindow):
 
         toolsMenu = self.menuBar().addMenu('&Tools')
         self.addActions(toolsMenu, (toolsManageHealthCentersAction, None,
-            toolsManageCriteriasAction))
+            toolsManageRatingCriteriasAction))
 
         reportsMenu = self.menuBar().addMenu('&Reports')
 
@@ -70,102 +77,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('GIS Data Monitoring Tool')
         self.showMaximized()
-
-    def fileImport(self):
-        pass
-
-    def fileExport(self):
-        pass
-
-    def manageHealthCenters(self):
-        manageHealthCentersToolBar = QToolBar('Manage Health Centers')
-        manageHealthCentersToolBar.addAction('Add Health Center',
-                self.addHealthCenter)
-        manageHealthCentersToolBar.addAction('Edit Health Center',
-                self.editHealthCenter)
-        manageHealthCentersToolBar.addAction('Delete Health Center',
-                self.deleteHealthCenter)
-
-        self.removeToolBar(self.toolbar)
-        self.toolbar = manageHealthCentersToolBar
-        self.addToolBar(self.toolbar)
-
-        self.showHealthCenters()
-
-    def addHealthCenter(self):
-        form = HealthCenterDialog()
-        if form.exec_():
-            if form.success:
-                self.health_centers = getHealthCenters()
-                self.showHealthCenters()
-                self.table.setCurrentCell(-1,-1)
-
-    def editHealthCenter(self):
-        current_row = self.table.currentRow()
-        if current_row == -1:
-            QMessageBox.warning(self, 'Error', 'Please select a row.')
-            self.table.setCurrentCell(-1,-1)
-            return
-        hc = self.health_centers[current_row]
-        form = HealthCenterDialog(health_center=hc)
-        if form.exec_():
-            if form.success:
-                self.health_centers = getHealthCenters()
-                self.showHealthCenters()
-
-    def deleteHealthCenter(self):
-        current_row = self.table.currentRow()
-        if current_row == -1:
-            QMessageBox.warning(self, 'Error', 'Please select a row.')
-            self.table.setCurrentCell(-1,-1)
-            return
-        hc =  self.health_centers[current_row]
-        form = DeleteHealthCenterDialog(health_center=hc)
-        if form.exec_():
-            if form.success:
-               self.health_centers.remove(hc)
-               self.table.removeRow(current_row)
-               self.table.setCurrentCell(-1,-1)
-
-
-    def showHealthCenters(self):
-        table = QTableWidget()
-        self.table = table
-        self.setCentralWidget(table)
-
-        self.connect(table,
-                SIGNAL("itemDoubleClicked(QTableWidgetItem*)"),
-                self.editHealthCenter)
-
-        table.setRowCount(len(self.health_centers))
-        table.setColumnCount(8)
-        table.setHorizontalHeaderLabels(['Name', 'Type', 'Description',
-            'Latitude', 'Longitude', 'Responsible Person', 'Phone Number', 
-            'Email Address'])
-        table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
-        table.setAlternatingRowColors(True)
-        table.setEditTriggers(QTableWidget.NoEditTriggers)
-        table.setSelectionBehavior(QTableWidget.SelectRows)
-        table.setSelectionMode(QTableWidget.SingleSelection)
-        selected = None
-        for row, hc in enumerate(self.health_centers):
-            table.setItem(row, 0, QTableWidgetItem(QString(hc.name)))
-            table.setItem(row, 1, QTableWidgetItem(QString(hc.type.name)))
-            table.setItem(row, 2, QTableWidgetItem(QString(hc.description)))
-            table.setItem(row, 3, QTableWidgetItem(QString(hc.latitude)))
-            table.setItem(row, 4, QTableWidgetItem(QString(hc.longitude)))
-            table.setItem(row, 5, QTableWidgetItem(QString(hc.responsible_person)))
-            table.setItem(row, 6, QTableWidgetItem(QString(hc.phone_number)))
-            table.setItem(row, 7, QTableWidgetItem(QString(hc.email_address)))
-
-    def manageCriterias(self):
-        pass
-
-    def addCriteria(self):
-        pass
-
-    def editCriteria(self):
-        pass
 
     def createAction(self, text, slot=None, shortcut=None, icon=None,
            tip=None, checkable=False, signal="triggered()"):
@@ -190,6 +101,189 @@ class MainWindow(QMainWindow):
                 target.addSeparator()
             else:
                 target.addAction(action)
+
+    def fileImport(self):
+        pass
+
+    def fileExport(self):
+        pass
+
+    def manageHealthCenters(self):
+        manageHealthCentersToolBar = QToolBar('Manage Health Centers')
+        manageHealthCentersToolBar.addAction('Add Health Center',
+                self.addHealthCenter)
+        manageHealthCentersToolBar.addAction('Edit Health Center',
+                self.editHealthCenter)
+        manageHealthCentersToolBar.addAction('Delete Health Center',
+                self.deleteHealthCenter)
+
+        self.removeToolBar(self.toolbar)
+        self.toolbar = manageHealthCentersToolBar
+        self.addToolBar(self.toolbar)
+
+        self.health_centers = getHealthCenters()
+        self.showHealthCenters()
+
+    def addHealthCenter(self):
+        form = HealthCenterDialog()
+
+        if form.exec_():
+            if form.success:
+                self.health_centers = getHealthCenters()
+                self.showHealthCenters()
+                self.table.setCurrentCell(-1,-1)
+
+    def editHealthCenter(self):
+        current_row = self.table.currentRow()
+
+        if current_row == -1:
+            QMessageBox.warning(self, 'Error', 'Please select a row.')
+            self.table.setCurrentCell(-1,-1)
+            return
+
+        hc = self.health_centers[current_row]
+        form = HealthCenterDialog(health_center=hc)
+
+        if form.exec_():
+            if form.success:
+                self.health_centers = getHealthCenters()
+                self.showHealthCenters()
+
+    def deleteHealthCenter(self):
+        current_row = self.table.currentRow()
+
+        if current_row == -1:
+            QMessageBox.warning(self, 'Error', 'Please select a row.')
+            self.table.setCurrentCell(-1,-1)
+            return
+
+        hc =  self.health_centers[current_row]
+        form = DeleteHealthCenterDialog(health_center=hc)
+
+        if form.exec_():
+            if form.success:
+               self.health_centers.remove(hc)
+               self.table.removeRow(current_row)
+               self.table.setCurrentCell(-1,-1)
+
+    def showHealthCenters(self):
+        table = QTableWidget()
+
+        self.connect(table,
+                SIGNAL("itemDoubleClicked(QTableWidgetItem*)"),
+                self.editHealthCenter)
+
+        table.setRowCount(len(self.health_centers))
+        table.setColumnCount(8)
+        table.setHorizontalHeaderLabels(['Name', 'Type', 'Description',
+            'Latitude', 'Longitude', 'Responsible Person', 'Phone Number', 
+            'Email Address'])
+        table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        table.setAlternatingRowColors(True)
+        table.setEditTriggers(QTableWidget.NoEditTriggers)
+        table.setSelectionBehavior(QTableWidget.SelectRows)
+        table.setSelectionMode(QTableWidget.SingleSelection)
+
+        for row, hc in enumerate(self.health_centers):
+            table.setItem(row, 0, QTableWidgetItem(QString(hc.name)))
+            table.setItem(row, 1, QTableWidgetItem(QString(hc.type.name)))
+            table.setItem(row, 2, QTableWidgetItem(QString(hc.description)))
+            table.setItem(row, 3, QTableWidgetItem(QString(hc.latitude)))
+            table.setItem(row, 4, QTableWidgetItem(QString(hc.longitude)))
+            table.setItem(row, 5, QTableWidgetItem(QString(hc.responsible_person)))
+            table.setItem(row, 6, QTableWidgetItem(QString(hc.phone_number)))
+            table.setItem(row, 7, QTableWidgetItem(QString(hc.email_address)))
+
+        table.setCurrentCell(-1, -1)
+        self.table = table
+        self.setCentralWidget(self.table)
+
+    def manageRatingCriterias(self):
+        manageRatingCriteriasToolBar = QToolBar('Manage Rating Criterias')
+        manageRatingCriteriasToolBar.addAction('Add Rating Criteria',
+                self.addRatingCriteria)
+        manageRatingCriteriasToolBar.addAction('Edit Rating Criteria',
+                self.editRatingCriteria)
+        manageRatingCriteriasToolBar.addAction('Delete Rating Criteria',
+                self.deleteRatingCriteria)
+
+        self.removeToolBar(self.toolbar)
+        self.toolbar = manageRatingCriteriasToolBar
+        self.addToolBar(self.toolbar)
+
+        self.rating_criterias = getRatingCriterias()
+        self.showRatingCriterias()
+
+    def addRatingCriteria(self):
+        form = RatingCriteriaDialog()
+
+        if form.exec_():
+            if form.success:
+                self.rating_criterias = getRatingCriterias()
+                self.showRatingCriterias()
+                self.table.setCurrentCell(-1,-1)
+
+    def editRatingCriteria(self):
+        current_row = self.table.currentRow()
+
+        if current_row == -1:
+            QMessageBox.warning(self, 'Error', 'Please select a row.')
+            self.table.setCurrentCell(-1,-1)
+            return
+
+        rc = self.rating_criterias[current_row]
+        form = RatingCriteriaDialog(rating_criteria=rc)
+
+        if form.exec_():
+            if form.success:
+                self.rating_criterias = getRatingCriterias()
+                self.showRatingCriterias()
+
+    def deleteRatingCriteria(self):
+        current_row = self.table.currentRow()
+
+        if current_row == -1:
+            QMessageBox.warning(self, 'Error', 'Please select a row.')
+            self.table.setCurrentCell(-1,-1)
+            return
+
+        rc =  self.rating_criterias[current_row]
+        form = DeleteRatingCriteriaDialog(rating_criteria=rc)
+
+        if form.exec_():
+            if form.success:
+               self.rating_criterias.remove(rc)
+               self.table.removeRow(current_row)
+               self.table.setCurrentCell(-1,-1)
+
+
+    def showRatingCriterias(self):
+        table = QTableWidget()
+
+        self.connect(table,
+                SIGNAL('itemDoubleClicked(QTableWidgetItem*)'),
+                self.editRatingCriteria)
+
+        table.setRowCount(len(self.rating_criterias))
+        table.setColumnCount(5)
+        table.setHorizontalHeaderLabels(['Name', 'Minimum Value',
+            'Maximum Value', 'Description', 'Valid from'])
+        table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        table.setAlternatingRowColors(True)
+        table.setEditTriggers(QTableWidget.NoEditTriggers)
+        table.setSelectionBehavior(QTableWidget.SelectRows)
+        table.setSelectionMode(QTableWidget.SingleSelection)
+
+        for row, rc in enumerate(self.rating_criterias):
+            table.setItem(row, 0, QTableWidgetItem(QString(rc.name)))
+            table.setItem(row, 1, QTableWidgetItem(QString(rc.min_value)))
+            table.setItem(row, 2, QTableWidgetItem(QString(rc.max_value)))
+            table.setItem(row, 3, QTableWidgetItem(QString(rc.description)))
+            table.setItem(row, 4, QTableWidgetItem(QString(str(rc.valid_from))))
+
+        table.setCurrentCell(-1,-1)
+        self.table = table
+        self.setCentralWidget(self.table)
 
     def helpAbout(self):
         QMessageBox.about(self, 'GIS Data Monitoring Tool - About',

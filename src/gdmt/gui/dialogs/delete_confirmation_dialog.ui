@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DeleteHealthCenterDialog</class>
- <widget class="QDialog" name="DeleteHealthCenterDialog">
+ <class>DeleteConfirmationDialog</class>
+ <widget class="QDialog" name="DeleteConfirmationDialog">
   <property name="geometry">
    <rect>
     <x>0</x>

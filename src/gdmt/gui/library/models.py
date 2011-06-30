@@ -65,10 +65,14 @@ class RatingCriteria(Base):
     min_value = Column('min_value', String(50))
     max_value = Column('max_value', String(50))
     description = Column('description', Text, nullable=True)
+    valid_from = Column('valid_from', Date)
 
-    def __init__(self, name, description=''):
+    def __init__(self, name, min_value, max_value, valid_from, description=''):
         self.name = name
+        self.min_value = min_value
+        self.max_value = max_value
         self.description = description
+        self.valid_from = valid_from
 
     def __unicode__(self):
         self.name
