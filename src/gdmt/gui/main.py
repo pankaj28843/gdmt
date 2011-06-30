@@ -5,12 +5,20 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from gui.library.dialogs import *
+from utils.config import session
+
 __version__ = '1.0.0'
 
+def getHealthCenters():
+    hc_list = []
+    for hc in session.query(HealthCenter).order_by(HealthCenter.name):
+        hc_list.append(hc)
+    return hc_list
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.health_centers = getHealthCenters()
 
         fileImportAction = self.createAction('&Import data',
                 self.fileImport, tip='Import a file')
@@ -24,8 +32,8 @@ class MainWindow(QMainWindow):
         toolsAddHealthCenterAction = self.createAction('&Add Health Center',
                 self.addHealthCenter, tip='Add Health Center')
 
-        toolsEditHealthCenterAction = self.createAction('&Edit Health Center',
-                self.editHealthCenter, tip='Edit Health Center')
+        toolsEditHealthCenterAction = self.createAction('&Edit Health Centers',
+                self.editHealthCenters, tip='Edit Health Center')
 
         toolsAddCriteriaAction = self.createAction('Add &Criteria',
                 self.addCriteria, tip='Add Criteria')
@@ -63,7 +71,7 @@ class MainWindow(QMainWindow):
                 settings.value('MainWindow/Restore').toByteArray())
 
         self.setWindowTitle('GIS Data Monitoring Tool')
-        #self.showMaximized()
+        self.showMaximized()
 
     def fileImport(self):
         pass
@@ -73,17 +81,37 @@ class MainWindow(QMainWindow):
 
     def addHealthCenter(self):
         form = HealthCenterDialog()
-        self.infinite_loop(form)
-
-    def infinite_loop(self, form):
         if form.exec_():
-            if form.isValid() is not True:
-                self.infinite_loop(form)
-            return
+            self.health_centers = getHealthCenters()
+            self.showHealthCenters()
 
-    def editHealthCenter(self):
-        pass
 
+    def editHealthCenters(self):
+        self.showHealthCenters()
+
+    def showHealthCenters(self):
+        table = QTableWidget()
+        self.setCentralWidget(table)
+        table.setRowCount(len(self.health_centers))
+        table.setColumnCount(8)
+        table.setHorizontalHeaderLabels(['Name', 'Type', 'Description',
+            'Latitude', 'Longitude', 'Responsible Person', 'Phone Number', 
+            'Email Address'])
+        table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        table.setAlternatingRowColors(True)
+        table.setEditTriggers(QTableWidget.NoEditTriggers)
+        table.setSelectionBehavior(QTableWidget.SelectRows)
+        table.setSelectionMode(QTableWidget.SingleSelection)
+        selected = None
+        for row, hc in enumerate(self.health_centers):
+            table.setItem(row, 0, QTableWidgetItem(QString(hc.name)))
+            table.setItem(row, 1, QTableWidgetItem(QString(hc.type.name)))
+            table.setItem(row, 2, QTableWidgetItem(QString(hc.description)))
+            table.setItem(row, 3, QTableWidgetItem(QString(hc.latitude)))
+            table.setItem(row, 4, QTableWidgetItem(QString(hc.longitude)))
+            table.setItem(row, 5, QTableWidgetItem(QString(hc.responsible_person)))
+            table.setItem(row, 6, QTableWidgetItem(QString(hc.phone_number)))
+            table.setItem(row, 7, QTableWidgetItem(QString(hc.email_address)))
     def addCriteria(self):
         pass
 

@@ -112,6 +112,13 @@
      </property>
     </widget>
    </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="locateOnMapPushButton">
+     <property name="text">
+      <string>Locate Lat/Lng on map</string>
+     </property>
+    </widget>
+   </item>
    <item row="15" column="0">
     <widget class="QLabel" name="nameResponsibleLabel">
      <property name="text">
@@ -165,18 +172,8 @@
    </item>
    <item row="18" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QPushButton" name="locateOnMapPushButton">
-     <property name="text">
-      <string>Locate Lat/Lng on map</string>
      </property>
     </widget>
    </item>
@@ -191,41 +188,7 @@
   <tabstop>nameResponsibleLineEdit</tabstop>
   <tabstop>phoneNumberLineEdit</tabstop>
   <tabstop>emailAddressLineEdit</tabstop>
-  <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>HealthCenterDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>346</x>
-     <y>390</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>HealthCenterDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>414</x>
-     <y>390</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -17,9 +17,14 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
         self.typeComboBox.addItems(types)
         if not MAC:
             self.buttonBox.setFocusPolicy(Qt.NoFocus)
-        #self.connect(self.buttonBox.button(QDialogButtonBox.Ok),
-        #            SIGNAL('clicked()'), self.isValid)
+        self.connect(self.buttonBox.button(QDialogButtonBox.Ok),
+                    SIGNAL('clicked()'), self.save)
+        self.connect(self.buttonBox.button(QDialogButtonBox.Cancel),
+                    SIGNAL('clicked()'), self.reject)
+        self.connect(self, SIGNAL('rejected()'), self.reject)
     def save(self):
+        if not self.isValid():
+            return
         name = unicode(self.nameLineEdit.text())
         type_id = session.query(HealthCenterType).filter_by(
                 name=unicode(self.typeComboBox.currentText())).one().id
@@ -34,6 +39,7 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
                 phone_number, email_address, description)
         session.add(hc)
         session.commit()
+        self.accept()
         return
 
     def isValid(self):
@@ -41,16 +47,14 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
             QMessageBox.warning(self, 'Errors in Form', "Name can't be empty.")
             self.exec_()
             self.nameLineEdit.setFocus()
-            return
+            return False
         if self.nameResponsibleLineEdit.text() == '':
             QMessageBox.warning(self, 'Errors in Form',
                     "Name of Responsible Person can't be empty.")
             self.nameResponsibleLineEdit.setFocus()
-            return
+            return False
         if self.phoneNumberLineEdit.text() == '':
             QMessageBox.warning(self, 'Errors in Form', "Phone Number can't be empty.")
             self.phoneNumberLineEdit.setFocus()
-            return
-        self.save()
+            return False
         return True
-

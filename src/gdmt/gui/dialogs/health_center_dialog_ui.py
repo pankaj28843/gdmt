@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'health_center_dialog.ui'
 #
-# Created: Wed Jun 29 15:53:48 2011
+# Created: Thu Jun 30 11:53:43 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,6 +58,9 @@ class Ui_HealthCenterDialog(object):
         self.longitudeLineEdit.setReadOnly(False)
         self.longitudeLineEdit.setObjectName(_fromUtf8("longitudeLineEdit"))
         self.formLayout.setWidget(5, QtGui.QFormLayout.FieldRole, self.longitudeLineEdit)
+        self.locateOnMapPushButton = QtGui.QPushButton(HealthCenterDialog)
+        self.locateOnMapPushButton.setObjectName(_fromUtf8("locateOnMapPushButton"))
+        self.formLayout.setWidget(6, QtGui.QFormLayout.FieldRole, self.locateOnMapPushButton)
         self.nameResponsibleLabel = QtGui.QLabel(HealthCenterDialog)
         self.nameResponsibleLabel.setObjectName(_fromUtf8("nameResponsibleLabel"))
         self.formLayout.setWidget(15, QtGui.QFormLayout.LabelRole, self.nameResponsibleLabel)
@@ -80,13 +83,9 @@ class Ui_HealthCenterDialog(object):
         self.emailAddressLineEdit.setObjectName(_fromUtf8("emailAddressLineEdit"))
         self.formLayout.setWidget(17, QtGui.QFormLayout.FieldRole, self.emailAddressLineEdit)
         self.buttonBox = QtGui.QDialogButtonBox(HealthCenterDialog)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.formLayout.setWidget(18, QtGui.QFormLayout.FieldRole, self.buttonBox)
-        self.locateOnMapPushButton = QtGui.QPushButton(HealthCenterDialog)
-        self.locateOnMapPushButton.setObjectName(_fromUtf8("locateOnMapPushButton"))
-        self.formLayout.setWidget(6, QtGui.QFormLayout.FieldRole, self.locateOnMapPushButton)
         self.nameLabel.setBuddy(self.nameLineEdit)
         self.typeLabel.setBuddy(self.typeComboBox)
         self.descriptionLabel.setBuddy(self.descriptionTextEdit)
@@ -97,8 +96,6 @@ class Ui_HealthCenterDialog(object):
         self.emailAddressLabel.setBuddy(self.emailAddressLineEdit)
 
         self.retranslateUi(HealthCenterDialog)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), HealthCenterDialog.accept)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), HealthCenterDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(HealthCenterDialog)
         HealthCenterDialog.setTabOrder(self.nameLineEdit, self.typeComboBox)
         HealthCenterDialog.setTabOrder(self.typeComboBox, self.descriptionTextEdit)
@@ -107,7 +104,6 @@ class Ui_HealthCenterDialog(object):
         HealthCenterDialog.setTabOrder(self.longitudeLineEdit, self.nameResponsibleLineEdit)
         HealthCenterDialog.setTabOrder(self.nameResponsibleLineEdit, self.phoneNumberLineEdit)
         HealthCenterDialog.setTabOrder(self.phoneNumberLineEdit, self.emailAddressLineEdit)
-        HealthCenterDialog.setTabOrder(self.emailAddressLineEdit, self.buttonBox)
 
     def retranslateUi(self, HealthCenterDialog):
         HealthCenterDialog.setWindowTitle(QtGui.QApplication.translate("HealthCenterDialog", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
@@ -116,8 +112,8 @@ class Ui_HealthCenterDialog(object):
         self.descriptionLabel.setText(QtGui.QApplication.translate("HealthCenterDialog", "&Description:", None, QtGui.QApplication.UnicodeUTF8))
         self.latitudeLabel.setText(QtGui.QApplication.translate("HealthCenterDialog", "&Latitude:", None, QtGui.QApplication.UnicodeUTF8))
         self.longitudeLabel.setText(QtGui.QApplication.translate("HealthCenterDialog", "L&ongitude:", None, QtGui.QApplication.UnicodeUTF8))
+        self.locateOnMapPushButton.setText(QtGui.QApplication.translate("HealthCenterDialog", "Locate Lat/Lng on map", None, QtGui.QApplication.UnicodeUTF8))
         self.nameResponsibleLabel.setText(QtGui.QApplication.translate("HealthCenterDialog", "Name of the &Responsible Person:", None, QtGui.QApplication.UnicodeUTF8))
         self.phoneNumberlabel.setText(QtGui.QApplication.translate("HealthCenterDialog", "&Phone Number:", None, QtGui.QApplication.UnicodeUTF8))
         self.emailAddressLabel.setText(QtGui.QApplication.translate("HealthCenterDialog", "&Email Address:", None, QtGui.QApplication.UnicodeUTF8))
-        self.locateOnMapPushButton.setText(QtGui.QApplication.translate("HealthCenterDialog", "Locate Lat/Lng on map", None, QtGui.QApplication.UnicodeUTF8))
 
