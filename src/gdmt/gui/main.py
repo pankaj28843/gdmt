@@ -18,7 +18,11 @@ def getHealthCenters():
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+
         self.health_centers = getHealthCenters()
+
+        self.toolbar = QToolBar()
+        self.addToolBar(self.toolbar)
 
         fileImportAction = self.createAction('&Import data',
                 self.fileImport, tip='Import a file')
@@ -29,17 +33,12 @@ class MainWindow(QMainWindow):
         fileQuitAction = self.createAction('&Quit', self.close, 'Ctrl + Q',
                 'filequit', 'Close the application')
 
-        toolsAddHealthCenterAction = self.createAction('&Add Health Center',
-                self.addHealthCenter, tip='Add Health Center')
+        toolsManageHealthCentersAction = self.createAction(
+                'Manage &Health Centers', self.manageHealthCenters,
+                tip='Manage Health Centers')
 
-        toolsEditHealthCenterAction = self.createAction('&Edit Health Centers',
-                self.editHealthCenters, tip='Edit Health Center')
-
-        toolsAddCriteriaAction = self.createAction('Add &Criteria',
-                self.addCriteria, tip='Add Criteria')
-
-        toolsEditCriteriaAction = self.createAction('E&dit Criteria',
-                self.editCriteria, tip='Edit Criteria')
+        toolsManageCriteriasAction = self.createAction('Manage &Criterias',
+                self.manageCriterias, tip='Manage Criterias')
 
         helpAboutAction = self.createAction('&About', self.helpAbout,
                 tip='About the application')
@@ -49,9 +48,8 @@ class MainWindow(QMainWindow):
             fileQuitAction))
 
         toolsMenu = self.menuBar().addMenu('&Tools')
-        self.addActions(toolsMenu, (toolsAddHealthCenterAction,
-            toolsEditHealthCenterAction, None, toolsAddCriteriaAction,
-            toolsEditCriteriaAction))
+        self.addActions(toolsMenu, (toolsManageHealthCentersAction, None,
+            toolsManageCriteriasAction))
 
         reportsMenu = self.menuBar().addMenu('&Reports')
 
@@ -79,19 +77,60 @@ class MainWindow(QMainWindow):
     def fileExport(self):
         pass
 
+    def manageHealthCenters(self):
+        manageHealthCentersToolBar = QToolBar('Manage Health Centers')
+        manageHealthCentersToolBar.addAction('Add Health Center',
+                self.addHealthCenter)
+        manageHealthCentersToolBar.addAction('Edit Health Center',
+                self.editHealthCenter)
+        manageHealthCentersToolBar.addAction('Delete Health Center',
+                self.deleteHealthCenter)
+
+        self.removeToolBar(self.toolbar)
+        self.toolbar = manageHealthCentersToolBar
+        self.addToolBar(self.toolbar)
+
+        self.showHealthCenters()
+
     def addHealthCenter(self):
         form = HealthCenterDialog()
         if form.exec_():
             self.health_centers = getHealthCenters()
             self.showHealthCenters()
 
+    def editHealthCenter(self):
+        current_row = self.table.currentRow()
+        if current_row == -1:
+            QMessageBox.warning(self, 'Error', 'Please select a row.')
+            self.table.setCurrentCell(-1,-1)
+            return
+        hc = self.health_centers[corrent_row]
+        form = HealthCenterDialog(health_center=hc)
+        if form.exec_():
+            self.health_centers = getHealthCenters()
+            self.showHealthCenters()
 
-    def editHealthCenters(self):
-        self.showHealthCenters()
+    def deleteHealthCenter(self):
+        current_row = self.table.currentRow()
+        if current_row == -1:
+            QMessageBox.warning(self, 'Error', 'Please select a row.')
+            self.table.setCurrentCell(-1,-1)
+            return
+        hc = self.health_centers[current_row]
+        session.delete(hc)
+        self.health_centers.remove(hc)
+        self.table.removeRow(current_row)
+
 
     def showHealthCenters(self):
         table = QTableWidget()
+        self.table = table
         self.setCentralWidget(table)
+
+        self.connect(table,
+                SIGNAL("itemDoubleClicked(QTableWidgetItem*)"),
+                self.editHealthCenter)
+
         table.setRowCount(len(self.health_centers))
         table.setColumnCount(8)
         table.setHorizontalHeaderLabels(['Name', 'Type', 'Description',
@@ -112,6 +151,10 @@ class MainWindow(QMainWindow):
             table.setItem(row, 5, QTableWidgetItem(QString(hc.responsible_person)))
             table.setItem(row, 6, QTableWidgetItem(QString(hc.phone_number)))
             table.setItem(row, 7, QTableWidgetItem(QString(hc.email_address)))
+
+    def manageCriterias(self):
+        pass
+
     def addCriteria(self):
         pass
 

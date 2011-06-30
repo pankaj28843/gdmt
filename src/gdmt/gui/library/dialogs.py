@@ -11,10 +11,25 @@ for hct in session.query(HealthCenterType).order_by(HealthCenterType.name):
     types.append(QString(hct.name))
 
 class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
-    def __init__(self, new=False, parent=None):
+    def __init__(self, health_center=None, parent=None):
         super(HealthCenterDialog, self).__init__(parent)
+
         self.setupUi(self)
         self.typeComboBox.addItems(types)
+
+        if health_center is not None:
+            self.nameLineEdit.setText(QString(health_center.name))
+            self.latitudeLineEdit.setText(QString(health_center.latitude))
+            self.longitudeLineEdit.setText(QString(health_center.longitude))
+            self.descriptionTextEdit.setText(
+                    QString(health_center.description))
+            self.nameResponsibleLineEdit.setText(
+                    QString(health_center.responsible_person))
+            self.phoneNumberLineEdit.setText(
+                    QString(health_center.phone_number))
+            self.emailAddressLineEdit.setText(
+                    QString(health_center.email_address))
+
         if not MAC:
             self.buttonBox.setFocusPolicy(Qt.NoFocus)
         self.connect(self.buttonBox.button(QDialogButtonBox.Ok),
@@ -35,9 +50,19 @@ class HealthCenterDialog(QDialog, Ui_HealthCenterDialog):
         phone_number = unicode(self.phoneNumberLineEdit.text())
         email_address = unicode(self.emailAddressLineEdit.text())
 
-        hc = HealthCenter(name, type_id, latitude, longitude, responsible_person,
-                phone_number, email_address, description)
-        session.add(hc)
+        if health_center is not None:
+            session.query(HealthCenter).filter(
+                    HealthCenter.id == health_center.id).update(values=dict(
+                        name=name, type_id=type_id, latitude=latitude,
+                        longitude=longitude, description=description,
+                        responsible_person=responsible_person,
+                        phone_number=phone_number, email_address=email_address
+                        ))
+        else:
+            hc = HealthCenter(name, type_id, latitude, longitude, responsible_person,
+                    phone_number, email_address, description)
+            session.add(hc)
+
         session.commit()
         self.accept()
         return
