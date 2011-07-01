@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
 
         self.toolbar = QToolBar()
         self.addToolBar(self.toolbar)
+        self.setStatusBar(QStatusBar())
 
         fileImportAction = self.createAction('&Import data',
                 self.fileImport, tip='Import a file')
