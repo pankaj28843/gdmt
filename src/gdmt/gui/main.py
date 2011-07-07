@@ -2,8 +2,15 @@
 
 import platform
 import sys
+
+## Will need to fix this issue of PYTHONPATH
+sys.path.insert(0, '/usr/local/share/qgis/python')
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from qgis.core import *
+from qgis.gui import *
+from qgis.utils import *
 from gui.library.dialogs import *
 from utils.config import session
 
@@ -40,6 +47,10 @@ class MainWindow(QMainWindow):
         fileQuitAction = self.createAction('&Quit', self.close, 'Ctrl + Q',
                 'filequit', 'Close the application')
 
+        gisVisualizeDataAction = self.createAction(
+                'Visualize Data', self.visualizeData,
+                tip='Visualize Data')
+
         toolsManageHealthCentersAction = self.createAction(
                 'Manage &Health Centers', self.manageHealthCenters,
                 tip='Manage Health Centers')
@@ -54,6 +65,9 @@ class MainWindow(QMainWindow):
         fileMenu = self.menuBar().addMenu('&File')
         self.addActions(fileMenu, (fileImportAction, fileExportAction, None,
             fileQuitAction))
+
+        gisMenu = self.menuBar().addMenu('&GIS')
+        self.addActions(gisMenu, (gisVisualizeDataAction,))
 
         toolsMenu = self.menuBar().addMenu('&Tools')
         self.addActions(toolsMenu, (toolsManageHealthCentersAction, None,
@@ -108,6 +122,29 @@ class MainWindow(QMainWindow):
 
     def fileExport(self):
         pass
+
+    def visualizeData(self):
+        QgsApplication.setPrefixPath("/usr/local/", True)
+        QgsApplication.initQgis()
+
+        canvas = QgsMapCanvas()
+        self.setCentralWidget(canvas)
+
+        canvas.setCanvasColor(Qt.white)
+        canvas.enableAntiAliasing(True)
+
+        layer = QgsVectorLayer('res/india_st.shp', 'Indian States', 'ogr')
+        if not layer.isValid():
+            raise IOError, "Failed to open the layer"
+
+        # add layer to the registry
+        QgsMapLayerRegistry.instance().addMapLayer(layer)
+
+        # set extent to the extent of our layer
+        canvas.setExtent(layer.extent())
+
+        # set the map canvas layer set
+        canvas.setLayerSet( [ QgsMapCanvasLayer(layer) ] )
 
     def manageHealthCenters(self):
         manageHealthCentersToolBar = QToolBar('Manage Health Centers')

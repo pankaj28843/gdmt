@@ -1,4 +1,4 @@
-#!/usr/bin/env/python
+#!/usr/bin/env python
 
 from utils.config import engine, session
 from gui.library.models import Base, HealthCenterType
